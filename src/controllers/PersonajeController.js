@@ -33,10 +33,9 @@ export const addPersonaje = async (req, res) => {
                 name: name, season: season, location: location, gun: gun,
                 img: /uploads/ + req.file.filename
             })
-            // return await addPersonaje.save().then(() => {
-            //     res.status(200).json({ status: true, messages: 'success' })
-            // })
-            return res.status(200).json({ status: true, message: 'success' })
+            return await newPersonaje.save().then(() => {
+                res.status(200).json({ status: true, messages: 'success' })
+            })
         } else {
             return res.status(400).json({ status: false, errors: validate });
         }
@@ -52,13 +51,14 @@ export const editPersonaje = async (req, res) => {
 
         let imagen = ''
         let data = { name: name, season: season, location: location, gun: gun }
+
         if (req.file != null) {
             imagen = '/uploads/' + req.file.filename
             data = { name: name, season: season, location: location, img: imagen, gun: gun }
+            await deleteImage(id)
         }
-        const validate = verifyData(name, season, location, gun, req.file, 'Y')
 
-
+        const validate = verifyData(name, season, location, gun)
         if (validate == '') {
             await PersonajeModel.updateOne({ _id: id }, { $set: data })
             return res.status(200).json({ status: true, message: 'Personaje Actualizado' })
@@ -66,6 +66,17 @@ export const editPersonaje = async (req, res) => {
             return res.status(400).json({ status: false, errors: validate });
         }
     } catch (err) {
+        return res.status(500).json({ status: false, errors: [err.message] })
+    }
+}
+
+export const deletePersonaje = async (req, res) => {
+    try {
+        const { id } = req.params
+        await deleteImage(id)
+        await PersonajeModel.deleteOne({ _id: id })
+        return res.status(200).json({ status: true, message: 'Personaje Eliminado' })
+    } catch (error) {
         return res.status(500).json({ status: false, errors: [err.message] })
     }
 }
@@ -94,3 +105,8 @@ const verifyData = (nameP, season, location, gun, image, blnOK) => {
     return errors
 }
 
+const deleteImage = async (id) => {
+    const personaje = await PersonajeModel.findById(id)
+    const img = personaje.img
+    fs.unlinkSync('./public/' + img)
+}

@@ -5,8 +5,8 @@ import mongoose from "mongoose";
 import { DB_HOST, DB_PORT, DB_DATABASE } from './config.js'
 import routerPersonajes from "./routes/Personajes.routes.js";
 
-// const connection = 'mongodb://' + DB_HOST + ':' + DB_PORT + '/' + DB_DATABASE;
-// mongoose.connect(connection).then();
+const connection = 'mongodb://' + DB_HOST + ':' + DB_PORT + '/' + DB_DATABASE;
+mongoose.connect(connection).then();
 
 const app = express();
 app.use(cors());
