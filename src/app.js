@@ -16,6 +16,11 @@ app.use(express.static('public'));
 app.use(routerPersonajes);
 
 app.use((req, res) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
     res.status(404).json({ status: false, messsage: '404 Not Found' });
 })
 
